@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        //use a map to store the number of appearance of each integer
+        map<int, int> count;
+        int appearOnce;
+        
+        
+        for(int i = 0; i < nums.size(); i++)
+        {
+            //if the integer has not been stored yet, store it and make it's val to 1
+            if(count.find(nums[i]) == count.end())
+            {
+                count[nums[i]] = 1;
+            }   
+            //otherwaise, increment its val
+            else
+            {
+                count[nums[i]] ++;
+            }
+                
+        }
+        
+        //iterate the map and return the num in count[num] which maps to 1
+        int num = 0;
+        for(map<int, int> ::iterator it = count.begin(); it != count.end(); it++)
+        {
+            if(it->second == 1)
+            {
+                num = it->first;
+                return num;
+            }  
+        }
+        
+        //return num
+        return num;
+    }
+    
+};
