@@ -1,0 +1,105 @@
+class Solution {
+public:
+    void solve(vector<vector<char>>& board) 
+    {
+        if(board.size() == 0)
+            return;
+        
+        stack<pair<int, int>> nonflip;
+       
+        
+        //left bound
+        //push all on left and right edge's 'O's (x,y) positions to stack
+        for(int i = 0; i < board.size();i++)
+        {
+            if(board[i][0] == 'O')
+                nonflip.push(make_pair(i,0));
+            
+            if(board[i][board[i].size() - 1] == 'O')
+                nonflip.push(make_pair(i,board[i].size() - 1));
+        }
+        
+        //upper bound
+        //push all up edge's 'O's (x, y) position to stack
+        for(int j = 0; j < board[0].size(); j++)
+        {
+            if(board[0][j] == 'O')
+                nonflip.push(make_pair(0, j));
+        }
+        
+        //lower bound
+        //push all bottom edge's 'O's (x,y) position to stack
+        int size = board.size();
+        for(int k = 0; k < board[size - 1].size(); k++)
+        {
+            if(board[size-1][k] == 'O')
+                nonflip.push(make_pair(size-1, k));
+        }
+        
+        set<pair<int,int>> visited;
+        //for each of the pair on the top of stack, we first need to check if it has been visited
+        //if not been visited, we just get its row and col value and push it to visited set
+        //then pop out the pair from stack.
+        //since we got the row and col of the top pair, we now need to find it's surrounding 'O's.
+        //the surrounding nodes should be the 1 upper, the 1 lower, the 1 left, the 1 right of current node
+        //if this current node already on one of the edge, such as if its on the left edge, we cannot go further on left, thus in this case, we just skip it. once we found all the valid surrounding nodes, if it has not been visited, push it to stack
+        //check each pairs in stack until we've checked all pairs 
+        
+        while(!nonflip.empty())
+        {
+            int row = nonflip.top().first;
+            int col = nonflip.top().second;
+            if(visited.find(nonflip.top()) == visited.end())
+            {
+                visited.insert(nonflip.top());
+                nonflip.pop();
+                
+                //down
+                if(row+1 < board.size() )
+                {
+                    if(visited.find(make_pair(row+1, col)) == visited.end() && board[row+1][col] == 'O')
+                        nonflip.push(make_pair(row+1, col));
+                }
+                
+                //up
+                if(row-1 >=0 )
+                {
+                    if(visited.find(make_pair(row-1, col)) == visited.end() && board[row-1][col] =='O')
+                        nonflip.push(make_pair(row-1, col));
+                }
+                
+                //left
+                if(col-1 >=0)
+                {
+                    if(visited.find(make_pair(row, col-1)) == visited.end() && board[row][col-1] == 'O')
+                        nonflip.push(make_pair(row, col-1));
+                }
+                
+                //right
+                 if(col+1 < board[row].size())
+                {
+                    if(visited.find(make_pair(row, col+1)) == visited.end() && board[row][col+1] == 'O')
+                        nonflip.push(make_pair(row, col+1));
+                }
+                
+                
+            }
+            else
+                nonflip.pop();
+        }
+        
+        //iterate each point in board
+        //if that point is not in the visited set and its value is 'O'
+        //then that point is surrounded by 'X', thus we need to assign a new value 'X' to that position
+        //the board will up to date since its pass by reference
+        for(int i = 0; i < board.size(); i++)
+        {
+            for(int j = 0; j < board[i].size(); j++)
+            {
+                if(board[i][j] == 'O' && visited.find(make_pair(i,j)) == visited.end())
+                    board[i][j] = 'X';
+            }
+        }
+        
+    }
+};
